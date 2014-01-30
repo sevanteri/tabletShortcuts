@@ -26,12 +26,25 @@ class EdgeClickHandler(PyMouseEvent):
         self.app = app
 
     def click(self, x, y, button, press):
-        if x == 0 and (1 < y < 767) \
-            and button == 1 and press:
-            self.showView()
-        elif y == 767 and (1 < x < 1365) \
-            and button == 1 and press:
-            self.showKeyboard()
+        print(x,y, press)
+        if button == 1 and press:
+
+            # left / right
+            if 1 < y < 767:
+                if x == 0:
+                    self.showView()
+                elif x == 1365:
+                    pass
+
+            # top / bottom
+            elif 1 < x < 1365:
+                if y == 0:
+                    pass
+                elif y == 767:
+                    self.showKeyboard()
+
+    # def move(self, x, y):
+    #     print("move", x, y)
 
     def showView(self):
         self.app.showView()
@@ -110,13 +123,14 @@ class TabletShortcuts(QGuiApplication):
 
     def quit(self):
         try:
+            # For some reason, the pymouse didn't stop the listening with one
+            # stop. Needed to call it twice.
             self.th.handler.stop()
             self.th.handler.stop()
         except: pass
 
         self.th.join()
         self.exit()
-        # self.th.end()
 
     def showView(self):
         if self.view.isVisible():
