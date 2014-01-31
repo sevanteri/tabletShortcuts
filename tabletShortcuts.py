@@ -1,95 +1,84 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import sys
+import sys, os
 
 from PyQt5.QtCore import pyqtProperty, QObject, QUrl, pyqtSlot, Q_CLASSINFO
 from PyQt5.QtCore import Qt
 from PyQt5.QtQml import qmlRegisterType, QQmlComponent, QQmlEngine
 
+from PyQt5.QtDBus import QDBusConnection
+
+
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtQuick import QQuickView
 
-from PyQt5.QtDBus import QDBus, QDBusConnection, QDBusInterface
-from PyQt5.QtDBus import QDBusAbstractAdaptor, QDBusMessage
 
 from subprocess import Popen, PIPE
 import re, shlex
 
-from pymouse import PyMouseEvent
 import threading
 
+import evdev
+from evdev import ecodes
+from select import select
 
-class EdgeClickHandler(PyMouseEvent):
-    def __init__(self, app):
-        PyMouseEvent.__init__(self)
-        self.app = app
-
-    def click(self, x, y, button, press):
-        print(x,y, press)
-        if button == 1 and press:
-
-            # left / right
-            if 1 < y < 767:
-                if x == 0:
-                    self.showView()
-                elif x == 1365:
-                    pass
-
-            # top / bottom
-            elif 1 < x < 1365:
-                if y == 0:
-                    pass
-                elif y == 767:
-                    self.showKeyboard()
-
-    # def move(self, x, y):
-    #     print("move", x, y)
-
-    def showView(self):
-        self.app.showView()
-
-    def showKeyboard(self):
-        self.app.run("/usr/bin/onboard")
+from utils import MyDBUSServer, ROInputDevice
 
 
 class EdgeClickThread(threading.Thread):
     def __init__(self, app):
         threading.Thread.__init__(self)
-        self.handler = EdgeClickHandler(app)
+        self.dev = None
+        self._end = threading.Event()
+        self.app = app
 
+        self.last_x = -1
+        self.last_y = -1
+
+        print("getting device")
+        for d in evdev.list_devices():
+            de = ROInputDevice(d, os.O_RDONLY | os.O_NONBLOCK)
+            if de.name.rfind("Finger") > 0:
+                self.dev = de
+                break
+
+        print("device: ", self.dev)
+
+
+            
     def run(self):
-        self.handler.run()
+        self._end.clear()
+        while not self.stopped:
+            r, w, x = select([self.dev.fd], [], [], 0.05)
+            if r:
+                if self.stopped:
+                    break
+                for event in self.dev.read():
+                    if event.code == ecodes.ABS_MT_POSITION_X:
+                        self.handleXChange(event.value)
+                    elif event.code == ecodes.ABS_MT_POSITION_Y:
+                        self.handleYChange(event.value)
+
+    def handleXChange(self, x):
+        if x == 0:
+            self.app.showView()
+
+        #self.last_x = x
+
+    def handleYChange(self, y):
+
+        if y == 0:
+            print("Y")
+
+        #self.last_y = y
 
     def end(self):
-        self.handler.stop()
-        #self.stop()
+        self._end.set()
 
-
-class ServerAdaptor(QDBusAbstractAdaptor):
-    """ This provides the DBus adaptor to the outside world"""
-
-    Q_CLASSINFO("D-Bus Interface", "sevanteri.TabletShortcuts")
-    Q_CLASSINFO("D-Bus Introspection",
-    '  <interface name="sevanteri.TabletShortcuts">\n'
-    '    <method name="hideshow" />\n'
-    '  </interface>\n')
-
-    def __init__(self, parent, app):
-        super().__init__(parent)
-        self.app = app
-
-    @pyqtSlot()
-    def hideshow(self):
-        self.app.showView()
-
-
-class MyServer(QObject):
-
-    def __init__(self, app):
-        QObject.__init__(self)
-        self.__dbusAdaptor = ServerAdaptor(self, app)
-        self.app = app
+    @property
+    def stopped(self):
+        return self._end.isSet()
 
 
 class TabletShortcuts(QGuiApplication):
@@ -99,7 +88,7 @@ class TabletShortcuts(QGuiApplication):
         self.view = QQuickView()
 
         self.bus = QDBusConnection.sessionBus()
-        self.server = MyServer(self)
+        self.server = MyDBUSServer(self)
         self.bus.registerObject("/app", self.server)
         self.bus.registerService("sevanteri.TabletShortcuts")
 
@@ -122,13 +111,7 @@ class TabletShortcuts(QGuiApplication):
         return Popen(shlex.split(cmd))
 
     def quit(self):
-        try:
-            # For some reason, the pymouse didn't stop the listening with one
-            # stop. Needed to call it twice.
-            self.th.handler.stop()
-            self.th.handler.stop()
-        except: pass
-
+        self.th.end()
         self.th.join()
         self.exit()
 

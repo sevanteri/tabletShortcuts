@@ -66,8 +66,8 @@ ListModel {
         title: "XKill"
         action: "xkill"
     }
-    // ListElement {
-    //     title: "Scrot"
-    //     action: "scrot"
-    // }
+    ListElement {
+        title: "Scrot"
+        action: "scrot -e 'mv $f ~/'"
+    }
 }
