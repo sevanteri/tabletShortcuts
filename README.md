@@ -22,3 +22,11 @@ Run
 Just run run.sh. Running the script again hides/shows the view.
 
 Left edge click opens the view too.
+
+
+TODO
+====
+
+* Clean up the whole thing
+* Make into a proper python package
+* Ditch run.sh
