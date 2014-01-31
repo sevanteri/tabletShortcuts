@@ -2,8 +2,7 @@ import QtQuick 2.0
 
 Rectangle {
     id: buttonRect
-    property bool toggled: false
-    color: toggled ? "#552222" : "#000000"
+    color: "#000000"
 
     width: 80
     height: width
