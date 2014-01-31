@@ -4,7 +4,7 @@ GridView {
     interactive: false
 
     width: 80
-    height: contentHeight
+    height: width/2 * (Math.ceil(model.count/2))
 
     cellWidth: width/2
     cellHeight: cellWidth
