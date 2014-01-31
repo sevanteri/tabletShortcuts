@@ -3,16 +3,12 @@
 
 import sys, os
 
-from PyQt5.QtCore import pyqtProperty, QObject, QUrl, pyqtSlot, Q_CLASSINFO
-from PyQt5.QtCore import Qt
-from PyQt5.QtQml import qmlRegisterType, QQmlComponent, QQmlEngine
+from PyQt5.QtCore import QUrl
 
 from PyQt5.QtDBus import QDBusConnection
 
-
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtQuick import QQuickView
-
 
 from subprocess import Popen, PIPE
 import re, shlex
@@ -36,6 +32,9 @@ class EdgeClickThread(threading.Thread):
         self.last_x = -1
         self.last_y = -1
 
+        self.max_x = -1
+        self.max_y = -1
+
         print("getting device")
         for d in evdev.list_devices():
             de = ROInputDevice(d, os.O_RDONLY | os.O_NONBLOCK)
@@ -44,7 +43,14 @@ class EdgeClickThread(threading.Thread):
                 break
 
         print("device: ", self.dev)
+        for cap in self.dev.capabilities()[ecodes.EV_ABS]:
+            if cap[0] == ecodes.ABS_MT_POSITION_X:
+                self.max_x = cap[1].max
+            elif cap[0] == ecodes.ABS_MT_POSITION_Y:
+                self.max_y = cap[1].max
 
+        print("max x: ", self.max_x)
+        print("max y: ", self.max_y)
 
             
     def run(self):
@@ -63,15 +69,14 @@ class EdgeClickThread(threading.Thread):
     def handleXChange(self, x):
         if x == 0:
             self.app.showView()
-
-        #self.last_x = x
+        elif x == self.max_x:
+            print("right")
 
     def handleYChange(self, y):
-
         if y == 0:
-            print("Y")
-
-        #self.last_y = y
+            print("top")
+        elif y == self.max_y:
+            print("bottom")
 
     def end(self):
         self._end.set()
@@ -123,7 +128,7 @@ class TabletShortcuts(QGuiApplication):
                         .communicate()[0].decode('UTF-8')
 
             m = re.search('current.([0-9]+).x.([0-9]+)', output)
-            SWIDTH = int(m.group(1))
+            #SWIDTH = int(m.group(1))
             SHEIGHT = int(m.group(2))
 
             X = Y = 1
