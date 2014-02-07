@@ -35,6 +35,16 @@ class EdgeClickThread(threading.Thread):
         self.max_x = -1
         self.max_y = -1
 
+        self.orientations = {"none": 0,
+                             "cw": 1,
+                             "half": 2,
+                             "ccw": 3}
+
+        self.actions = [self.handleLeftEdge,
+                        self.handleTopEdge,
+                        self.handleRightEdge,
+                        self.handleBottomEdge]
+
         print("getting device")
         for d in evdev.list_devices():
             de = ROInputDevice(d, os.O_RDONLY | os.O_NONBLOCK)
@@ -43,17 +53,21 @@ class EdgeClickThread(threading.Thread):
                 break
 
         print("device: ", self.dev)
-        for cap in self.dev.capabilities()[ecodes.EV_ABS]:
-            if cap[0] == ecodes.ABS_MT_POSITION_X:
-                self.max_x = cap[1].max
-            elif cap[0] == ecodes.ABS_MT_POSITION_Y:
-                self.max_y = cap[1].max
+        if self.dev:
+            for cap in self.dev.capabilities()[ecodes.EV_ABS]:
+                if cap[0] == ecodes.ABS_MT_POSITION_X:
+                    self.max_x = cap[1].max
+                elif cap[0] == ecodes.ABS_MT_POSITION_Y:
+                    self.max_y = cap[1].max
 
-        print("max x: ", self.max_x)
-        print("max y: ", self.max_y)
+            print("max x: ", self.max_x)
+            print("max y: ", self.max_y)
 
             
     def run(self):
+        if not self.dev:
+            return
+        
         self._end.clear()
         while not self.stopped:
             r, w, x = select([self.dev.fd], [], [], 0.05)
@@ -68,15 +82,37 @@ class EdgeClickThread(threading.Thread):
 
     def handleXChange(self, x):
         if x == 0:
-            self.app.showView()
+            rotation = self.getScreenRotation()
+            self.actions[0 - self.orientations[rotation]]()
         elif x == self.max_x:
-            print("right")
+            rotation = self.getScreenRotation()
+            self.actions[2 - self.orientations[rotation]]()
 
     def handleYChange(self, y):
         if y == 0:
-            print("top")
+            rotation = self.getScreenRotation()
+            self.actions[1 - self.orientations[rotation]]()
         elif y == self.max_y:
-            print("bottom")
+            rotation = self.getScreenRotation()
+            self.actions[3 - self.orientations[rotation]]()
+
+    def handleLeftEdge(self):
+        self.app.showView()
+
+    def handleTopEdge(self):
+        pass
+
+    def handleRightEdge(self):
+        pass
+
+    def handleBottomEdge(self):
+        print(self.app.run("onboard"))
+
+    def getScreenRotation(self):
+        output = Popen("xsetwacom --get 'Wacom ISDv4 E6 Finger touch' Rotate", shell=True, stdout=PIPE)\
+                        .communicate()[0].decode('UTF-8').strip()
+
+        return output
 
     def end(self):
         self._end.set()
@@ -124,17 +160,21 @@ class TabletShortcuts(QGuiApplication):
         if self.view.isVisible():
             self.view.hide()
         else:
-            output = Popen("xrandr | grep 'current'", shell=True, stdout=PIPE)\
+            width, height = TabletShortcuts.getScreenGeometry()
+
+            self.view.setGeometry(1, 1, 80, height)
+            self.view.show()
+
+    def getScreenGeometry():
+        output = Popen("xrandr | grep 'current'", shell=True, stdout=PIPE)\
                         .communicate()[0].decode('UTF-8')
 
-            m = re.search('current.([0-9]+).x.([0-9]+)', output)
-            #SWIDTH = int(m.group(1))
-            SHEIGHT = int(m.group(2))
+        m = re.search('current.([0-9]+).x.([0-9]+)', output)
+        width = int(m.group(1))
+        height = int(m.group(2))
 
-            X = Y = 1
+        return (width, height)
 
-            self.view.setGeometry(X, Y, 80, SHEIGHT)
-            self.view.show()
 
 def main():
     # root.setAttribute(Qt.WA_ShowWithoutActivating)
