@@ -106,7 +106,7 @@ class EdgeClickThread(threading.Thread):
         pass
 
     def handleBottomEdge(self):
-        print(self.app.run("onboard"))
+        pass
 
     def getScreenRotation(self):
         output = Popen("xsetwacom --get 'Wacom ISDv4 E6 Finger touch' Rotate", shell=True, stdout=PIPE)\
