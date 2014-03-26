@@ -25,6 +25,16 @@ ListModel {
                 title: "V-"
                 action: "amixer -c0 set Master 1dB-"
                 doNotHide: true
+            },
+            ListElement {
+                title: "B+"
+                action: "xbacklight -inc 10"
+                doNotHide: true
+            }, 
+            ListElement {
+                title: "B-"
+                action: "xbacklight -dec 10"
+                doNotHide: true
             }
         ]
     }
@@ -68,6 +78,6 @@ ListModel {
     }
     ListElement {
         title: "Scrot"
-        action: "scrot -e 'mv $f ~/'"
+        action: "scrot -s -e 'mv $f ~/'"
     }
 }
