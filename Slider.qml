@@ -3,14 +3,16 @@ import QtQuick 2.0
 Rectangle {
     id: slider
 
+    property alias text: titleText.text
+
     width: root.buttonWidth
-    height: width
+    height: root.buttonHeight
 
     color: "#555"
 
     property real value: 1
-    property real max: 100
-    property real min: 0
+    property real maximum: typeof(max) === 'undefined' ? 100 : max
+    property real minimum: typeof(min) === 'undefined' ? 0 : min
 
     onValueChanged: {
         // console.log("onchange: " + value)
@@ -25,33 +27,50 @@ Rectangle {
         root.runCommand(act); 
     }
 
-    Text {
-        anchors.centerIn: parent
-        text: title
-        color: "white"
-        wrapMode: Text.WordWrap
-        font.pointSize: 12
-    }
-
-    Item {
-        id: base
+    Column {
         anchors.fill: parent
         anchors.margins: 10
+        spacing: 10
+        Text {
+            id: titleText
+            text: title
+            color: "white"
+            wrapMode: Text.WordWrap
+            font.pointSize: root.fontSize
+        }
 
         Rectangle {
-            id: handle
-            color: "#000"
+            id: base
 
-            anchors.verticalCenter: parent.verticalCenter
+            color: Qt.lighter(slider.color, 1.5)
 
-            width: 10
-            height: parent.height
+            width: parent.width
+            height: titleText.text.length > 0 ?
+                        parent.height - titleText.height - parent.spacing :
+                        parent.height
 
-            onXChanged: {
-                if (x + width > base.width)
-                    x = base.width - width;
-                if (x < 0)
-                    x = 0;
+            Text {
+                id: valueLabel
+
+                anchors.centerIn: parent
+                text: value
+            }
+
+            Rectangle {
+                id: handle
+                color: "#000"
+
+                anchors.verticalCenter: parent.verticalCenter
+
+                width: 10
+                height: parent.height
+
+                onXChanged: {
+                    if (x + width > base.width)
+                        x = base.width - width;
+                    if (x < 0)
+                        x = 0;
+                }
             }
         }
     }
@@ -75,8 +94,8 @@ Rectangle {
     }
 
     function updateValue() {
-        slider.value = (max - min) * 
-                            handle.x / (base.width - handle.width) +
-                            min;
+        slider.value = (maximum - minimum) * 
+                        handle.x / (base.width - handle.width) +
+                        minimum;
     }
 }

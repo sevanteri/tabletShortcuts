@@ -1,61 +1,68 @@
 import QtQuick 2.0
 
 ListModel {
-
     ListElement {
-        title: "Quit"
-        action: "quit"
-    }
-    ListElement {
-        title: "Hide"
-        action: "hide"
-    }
-    ListElement {
-        type: "slider"
-        title: "Volume"
-        action: "amixer -c0 set Master %1"
-        max: 87
-        min: 0
-    }
-    ListElement {
-        type: "slider"
-        title: "Brightness"
-        action: "xbacklight -set %1"
-        min: 0
-        max: 100
-        //integerOnly: true
+        elements: [
+            ListElement {
+                type: "slider"
+                title: "Volume"
+                action: "amixer -c0 set Master %1"
+                max: 87
+                min: 0
+            },
+            ListElement {
+                type: "slider"
+                title: "Brightness"
+                action: "xbacklight -set %1"
+                min: 1
+                max: 100
+                //integerOnly: true
+            }
+        ]
     }
 
     ListElement {
-        type: "toggle"
-        title: "Fing"
-        toggleOff: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Touch off"
-        toggleOn: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Touch on"
-    }
-    ListElement {
-        type: "toggle"
-        title: "Pad"
-        toggleOff: "synclient TouchpadOff=1"
-        toggleOn: "synclient TouchpadOff=0"
-    }
-    ListElement {
-        type: "toggle"
-        title: "Gest"
-        toggleOff: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Gesture off"
-        toggleOn: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Gesture on"
+        elements: [
+            ListElement {
+                type: "toggle"
+                title: "Touch on/off"
+                toggleOff: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Touch off"
+                toggleOn: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Touch on"
+            },
+            ListElement {
+                type: "toggle"
+                title: "TouchPad on/off"
+                toggleOff: "synclient TouchpadOff=1"
+                toggleOn: "synclient TouchpadOff=0"
+            },
+            ListElement {
+                type: "toggle"
+                title: "Gestures on/off"
+                toggleOff: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Gesture off"
+                toggleOn: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Gesture on"
+            }
+        ]
     }
 
-    ListElement {title: "N"; action: "xrotate normal" }
-    ListElement {title: "I"; action: "xrotate inverted"}
-    ListElement {title: "L"; action: "xrotate left"}
-    ListElement {title: "R"; action: "xrotate right"}
+    ListElement {
+        elements: [
+             ListElement {title: "Rotate normal"; action: "xrotate normal" }
+            ,ListElement {title: "Rotate inverted"; action: "xrotate inverted"}
+            ,ListElement {title: "Rotate left"; action: "xrotate left"}
+            ,ListElement {title: "Rotate right"; action: "xrotate right"}
+        ]
+    }
     
     ListElement {
-        title: "XKill"
-        action: "xkill"
-    }
-    ListElement {
-        title: "Scrot"
-        action: "scrot -s -e 'mv $f ~/'"
+        elements: [
+            ListElement {
+                title: "XKill"
+                action: "xkill"
+            },
+            ListElement {
+                title: "Scrot"
+                action: "scrot -s -e 'mv $f ~/'"
+            }
+        ]
     }
 }
