@@ -2,9 +2,9 @@ import QtQuick 2.0
 
 Rectangle {
     id: buttonRect
-    color: "#000000"
+    color: root.buttonColor
 
-    width: 80
+    width: root.buttonWidth
     height: width
 
     // anchors.fill: parent
@@ -21,7 +21,7 @@ Rectangle {
         onClicked: {
 
             var hide = typeof(doNotHide) !== 'undefined' ? !doNotHide : true;
-            // console.log(hide);
+            // console.debug(hide);
             
             if (action === 'quit') {
                 Qt.quit();
@@ -31,7 +31,7 @@ Rectangle {
             } else {
                 if (hide)
                     root.hideView();
-                console.log("Running cmd '" + action + "'");
+                console.debug("Running cmd '" + action + "'");
                 // run action
                 root.runCommand(action);
             }

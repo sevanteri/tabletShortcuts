@@ -1,77 +1,68 @@
 import QtQuick 2.0
 
 ListModel {
-    ListElement {
-        buttons: [
-            ListElement {
-                title: "Quit"
-                action: "quit"
-            },
-            ListElement {
-                title: "Hide"
-                action: "hide"
-            }
-        ]
-    }
-    ListElement {
-        type: "group"
-        buttons: [
-            ListElement {
-                title: "V+"
-                action: "amixer -c0 set Master 1dB+"
-                doNotHide: true
-            }, 
-            ListElement {
-                title: "V-"
-                action: "amixer -c0 set Master 1dB-"
-                doNotHide: true
-            },
-            ListElement {
-                title: "B+"
-                action: "xbacklight -inc 10"
-                doNotHide: true
-            }, 
-            ListElement {
-                title: "B-"
-                action: "xbacklight -dec 10"
-                doNotHide: true
-            }
-        ]
-    }
 
     ListElement {
-        type: "group"
-        buttons: [
-            ListElement {
-                type: "toggle"
-                title: "Fing"
-                action1: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Touch off"
-                action2: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Touch on"
-            },
-            ListElement {
-                type: "toggle"
-                title: "Pad"
-                action1: "synclient TouchpadOff=1"
-                action2: "synclient TouchpadOff=0"
-            },
-            ListElement {
-                type: "toggle"
-                title: "Gest"
-                action1: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Gesture off"
-                action2: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Gesture on"
-            }
-        ]
+        title: "Quit"
+        action: "quit"
+    }
+    ListElement {
+        title: "Hide"
+        action: "hide"
+    }
+    ListElement {
+        type: "slider"
+        title: "Volume"
+        action: "amixer -c0 set Master %1"
+        max: 87
+        min: 0
+    }
+    ListElement {
+        title: "V+"
+        action: "amixer -c0 set Master 1dB+"
+        doNotHide: true
+    } 
+    ListElement {
+        title: "V-"
+        action: "amixer -c0 set Master 1dB-"
+        doNotHide: true
+    }
+    ListElement {
+        title: "B+"
+        action: "xbacklight -inc 10"
+        doNotHide: true
+    } 
+    ListElement {
+        title: "B-"
+        action: "xbacklight -dec 10"
+        doNotHide: true
     }
 
+
     ListElement {
-        type: "group"
-        buttons: [
-              ListElement {title: "N"; action: "xrotate normal" }
-            , ListElement {title: "I"; action: "xrotate inverted"}
-            , ListElement {title: "L"; action: "xrotate left"}
-            , ListElement {title: "R"; action: "xrotate right"}
-            ]
+        type: "toggle"
+        title: "Fing"
+        toggleOff: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Touch off"
+        toggleOn: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Touch on"
     }
+    ListElement {
+        type: "toggle"
+        title: "Pad"
+        toggleOff: "synclient TouchpadOff=1"
+        toggleOn: "synclient TouchpadOff=0"
+    }
+    ListElement {
+        type: "toggle"
+        title: "Gest"
+        toggleOff: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Gesture off"
+        toggleOn: "xsetwacom --set 'Wacom ISDv4 E6 Finger touch' Gesture on"
+    }
+
+    ListElement {title: "N"; action: "xrotate normal" }
+    ListElement {title: "I"; action: "xrotate inverted"}
+    ListElement {title: "L"; action: "xrotate left"}
+    ListElement {title: "R"; action: "xrotate right"}
+    
     ListElement {
         title: "XKill"
         action: "xkill"

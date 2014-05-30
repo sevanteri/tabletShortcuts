@@ -11,9 +11,9 @@ class ServerAdaptor(QDBusAbstractAdaptor):
 
     Q_CLASSINFO("D-Bus Interface", "sevanteri.TabletShortcuts")
     Q_CLASSINFO("D-Bus Introspection",
-        '  <interface name="sevanteri.TabletShortcuts">\n'
-        '    <method name="hideshow" />\n'
-        '  </interface>\n')
+                '<interface name="sevanteri.TabletShortcuts">\n'
+                '   <method name="hideshow" />\n'
+                '</interface>\n')
 
     def __init__(self, parent, app):
         super().__init__(parent)

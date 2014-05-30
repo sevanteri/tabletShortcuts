@@ -3,9 +3,9 @@ import QtQuick 2.0
 Rectangle {
     id: buttonRect
     property bool toggled: false
-    color: toggled ? "#552222" : "#000000"
+    color: toggled ? root.buttonColorToggled : root.buttonColor
 
-    width: 80
+    width: root.buttonWidth
     height: width
 
     // anchors.fill: parent
@@ -27,7 +27,7 @@ Rectangle {
             if (hide)
                 root.hideView();
 
-            var action = toggled ? action2 : action1;
+            var action = toggled ? toggleOn : toggleOff;
             toggled = !toggled;
             
             console.log("Running cmd '" + action + "'");

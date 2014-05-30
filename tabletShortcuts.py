@@ -52,7 +52,7 @@ class TabletShortcuts(QGuiApplication):
         else:
             width, height = TabletShortcuts.getScreenGeometry()
 
-            self.view.setGeometry(1, 1, 80, height)
+            self.view.setGeometry(1, 1, width, height)
             self.view.show()
 
     def getScreenGeometry():
