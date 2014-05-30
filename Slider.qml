@@ -15,7 +15,10 @@ Rectangle {
     onValueChanged: {
         // console.log("onchange: " + value)
 
-        var act = action.arg(value);
+        var intOnly = typeof(integerOnly) !== 'undefined' ? 
+                            integerOnly : false;
+
+        var act = action.arg(intOnly ? Math.round(value) : value);
 
         console.log("Running cmd '" + act + "'");
         // run action
