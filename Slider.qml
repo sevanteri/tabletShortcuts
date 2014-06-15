@@ -70,12 +70,10 @@ Rectangle {
                 }
             }
 
-            Text {
+            Label {
                 id: valueLabel
 
-                anchors.centerIn: parent
                 text: Math.round(value)
-                font.pointSize: root.fontSize
             }
         }
     }

@@ -10,15 +10,9 @@ Rectangle {
 
     signal clicked
 
-    Text {
+    Label {
         id: titleText
-        // anchors.centerIn: parent
-        anchors.margins: 10
-        anchors.fill: parent
         text: title
-        color: "white"
-        wrapMode: Text.WordWrap
-        font.pointSize: root.fontSize
     }
     MouseArea {
         anchors.fill: parent
