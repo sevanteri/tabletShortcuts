@@ -58,10 +58,18 @@ ListModel {
             ListElement {
                 title: "XKill"
                 action: "xkill"
+                hideAfter: true
             },
             ListElement {
                 title: "Scrot"
                 action: "scrot -s -e 'mv $f ~/'"
+                hideAfter: true
+            },
+            ListElement {
+                type: "confirm"
+                title: "Sleep"
+                action: "systemctl suspend"
+                hideAfter: true
             }
         ]
     }

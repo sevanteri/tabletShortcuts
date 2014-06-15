@@ -7,5 +7,5 @@ cd $(dirname $BASH_SOURCE)
 if [[ $RUNNING -eq 1 ]]; then
 dbus-send --dest=sevanteri.TabletShortcuts --type=method_call /app sevanteri.TabletShortcuts.hideshow
 else
-./tabletShortcuts.py&
+./tabletShortcuts.py -plugin EvdevTouch&
 fi

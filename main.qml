@@ -20,16 +20,18 @@ Rectangle {
                                 (minButtonWidth*8)) *
                                  minButtonHeight
 
-    property int cellWidth: buttonWidth + 10
-    property int cellHeight: buttonHeight + 10
+    property int cellWidth: buttonWidth + padding/2
+    property int cellHeight: buttonHeight + padding/2
 
     property string buttonColor: "#000000"
     property string buttonColorToggled: "#552222"
 
-    property int fontSize: 12
+    property int fontSize: Math.ceil(
+                            (width - padding*2) /
+                            (minButtonWidth*8)) * 8
 
-    width: 800
-    height: 600
+    width: 1366
+    height: 768
 
     color: "#555555"
 
@@ -37,7 +39,7 @@ Rectangle {
         id: flick
         anchors.fill: parent
         anchors.margins: padding
-        interactive: true
+        interactive: false
 
         contentHeight: contentColumn.height
 
@@ -52,6 +54,8 @@ Rectangle {
                     root.cellWidth
 
             ListView {
+                id: rows
+
                 model: Buttons {}
 
                 width: parent.width
@@ -73,14 +77,22 @@ Rectangle {
                                         cellWidth / width) * 
                                         cellHeight
                     
-                    cellWidth: root.cellWidth
+                    property bool stretchElements: 
+                        model.count * root.cellWidth - parent.width < 0
+
+                    cellWidth: stretchElements ?
+                                    Math.floor(parent.width / model.count) :
+                                    root.cellWidth
+
                     cellHeight: root.cellHeight
 
                     delegate: Loader {
-                        width: root.buttonWidth
-                        // text: title
+                        width: grid.cellWidth - padding/2
+                        height: root.buttonHeight
+
                         source: (type === "toggle") ? "ToggleButton.qml" :
                                 (type === "slider") ? "Slider.qml" :
+                                (type === "confirm") ? "ConfirmButton.qml" :
                                 "NormalButton.qml"
                     }
                 }
@@ -89,18 +101,21 @@ Rectangle {
             Row {
                 id: quitButtons
 
-                height: 60
+                height: root.buttonHeight
 
                 y: contentColumn.height < flick.height ?
-                    flick.height - height : y
+                    flick.height - height : 
+                    rows.height
 
                 spacing: 10
                 Button {
+                    width: root.buttonWidth
                     height: parent.height
                     text: "Quit"
                     onClicked: Qt.quit()
                 }
                 Button {
+                    width: root.buttonWidth
                     height: parent.height
                     text: "Hide"
                     onClicked: root.hideView()
@@ -108,5 +123,4 @@ Rectangle {
             } 
         }
     }
-
 }

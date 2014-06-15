@@ -10,7 +10,7 @@ Rectangle {
 
     color: "#555"
 
-    property real value: 1
+    property real value: 0
     property real maximum: typeof(max) === 'undefined' ? 100 : max
     property real minimum: typeof(min) === 'undefined' ? 0 : min
 
@@ -49,16 +49,13 @@ Rectangle {
                         parent.height - titleText.height - parent.spacing :
                         parent.height
 
-            Text {
-                id: valueLabel
-
-                anchors.centerIn: parent
-                text: value
+            onWidthChanged: {
+                handle.x = (value/maximum) * base.width
             }
 
             Rectangle {
                 id: handle
-                color: "#000"
+                color: "#333"
 
                 anchors.verticalCenter: parent.verticalCenter
 
@@ -72,6 +69,14 @@ Rectangle {
                         x = 0;
                 }
             }
+
+            Text {
+                id: valueLabel
+
+                anchors.centerIn: parent
+                text: Math.round(value)
+                font.pointSize: root.fontSize
+            }
         }
     }
 
@@ -81,7 +86,6 @@ Rectangle {
         drag.axis: Drag.XAxis
         drag.minimumX: 0
         drag.maximumX: base.width - handle.width
-
 
         onClicked: {
             handle.x = mouse.x - handle.width;

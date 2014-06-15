@@ -5,8 +5,8 @@ Button {
     color: toggled ? root.buttonColorToggled : root.buttonColor
 
     onClicked: {
-        var hide = typeof(doNotHide) !== 'undefined' ? !doNotHide : true;
-        // console.log(hide);
+        var hide = typeof(hideAfter) !== 'undefined' ? hideAfter : false;
+        // console.debug(hide);
 
         if (hide)
             root.hideView();

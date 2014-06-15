@@ -4,9 +4,6 @@ Rectangle {
     id: buttonRect
     color: root.buttonColor
 
-    width: root.buttonWidth
-    height: root.buttonHeight
-
     // anchors.fill: parent
 
     property alias text: titleText.text

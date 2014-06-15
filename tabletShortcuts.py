@@ -3,11 +3,11 @@
 
 import sys
 
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QUrl, Qt
 
 from PyQt5.QtDBus import QDBusConnection
 
-from PyQt5.QtGui import QGuiApplication
+from PyQt5.QtGui import QGuiApplication, QColor
 from PyQt5.QtQuick import QQuickView
 
 from subprocess import Popen, PIPE
@@ -50,9 +50,9 @@ class TabletShortcuts(QGuiApplication):
         if self.view.isVisible():
             self.view.hide()
         else:
-            width, height = TabletShortcuts.getScreenGeometry()
+            # width, height = TabletShortcuts.getScreenGeometry()
 
-            self.view.setGeometry(1, 1, width, height)
+            # self.view.setGeometry(1, 1, width, height)
             self.view.show()
 
     def getScreenGeometry():
